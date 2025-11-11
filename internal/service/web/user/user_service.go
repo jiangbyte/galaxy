@@ -8,7 +8,6 @@ import (
 
 // UserService 用户服务接口定义
 type UserService interface {
-	// GetUserByID 用户信息查询
 	GetUserByID(accountId string) (*models.AuthUserInfo, error)
 	GetUserByUsername(username string) (*models.AuthAccount, *models.AuthUserInfo, error)
 	GetUserProfile(accountId string) (*models.AuthUserProfile, error)
