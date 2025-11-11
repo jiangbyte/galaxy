@@ -1,0 +1,70 @@
+# 系统配置
+app:
+  name: "astro-oj"
+  version: "1.0.0"
+  env: "local" # local, dev, prod
+  port: 8080
+  mode: "single" # single, distributed
+
+# 服务端口配置
+server:
+  web:
+    port: 8080
+  admin:
+    port: 8081
+  judge:
+    port: 8082
+  clone:
+    port: 8083
+
+# 数据库配置
+database:
+  postgres:
+    host: "localhost"
+    port: 5432
+    user: "devuser"
+    password: "123456"
+    dbname: "devdb"
+    sslmode: "disable"
+    max_idle_conns: 10
+    max_open_conns: 100
+    conn_max_lifetime: 3600
+
+# Redis配置
+redis:
+  host: "localhost"
+  port: 6379
+  password: "123456"
+  db: 0
+  pool_size: 20
+
+# RabbitMQ配置 (分布式部署时使用)
+rabbitmq:
+  host: "localhost"
+  port: 5672
+  username: "guest"
+  password: "guest"
+  vhost: "/"
+
+# Etcd配置 (分布式部署时使用)
+etcd:
+  endpoints:
+    - "localhost:2379"
+  dial_timeout: 5
+
+# 监控配置 (分布式部署时使用)
+monitor:
+  prometheus:
+    port: 9090
+  grafana:
+    port: 3000
+
+# 队列配置
+queue:
+  judge_queue: "judge_queue"
+  clone_queue: "clone_queue"
+
+# JWT配置
+jwt:
+  secret: "your-secret-key"
+  expire_hours: 24
