@@ -1,9 +1,10 @@
-package user
+package auth
 
 import (
 	"errors"
 	"galaxy/internal/dto/user"
 	"galaxy/internal/models"
+	user2 "galaxy/internal/service/web/user"
 	"galaxy/pkg/database"
 	"galaxy/pkg/utils"
 	"gorm.io/gorm"
@@ -12,16 +13,16 @@ import (
 
 // AuthService 用户服务接口定义
 type AuthService interface {
-	DoRegister(req *user.RegisterRequest) (*models.AuthUserInfo, error)
-	DoLogin(req *user.LoginRequest, clientIP string) (string, *models.AuthAccount, *models.AuthUserInfo, error)
+	DoRegister(req *user.RegisterRequest) (*models.UserInfo, error)
+	DoLogin(req *user.LoginRequest, clientIP string) (string, *user.UserPublicAssociatedInfo, error)
 }
 
 type AuthServiceImpl struct {
 	db          *gorm.DB
-	userService UserService // 注入 UserService
+	userService user2.UserService // 注入 UserService
 }
 
-func NewAuthService(userService UserService) AuthService {
+func NewAuthService(userService user2.UserService) AuthService {
 	return &AuthServiceImpl{
 		db:          database.GetDB(),
 		userService: userService,
@@ -29,7 +30,7 @@ func NewAuthService(userService UserService) AuthService {
 }
 
 // DoRegister 用户注册
-func (s *AuthServiceImpl) DoRegister(req *user.RegisterRequest) (*models.AuthUserInfo, error) {
+func (s *AuthServiceImpl) DoRegister(req *user.RegisterRequest) (*models.UserInfo, error) {
 	// 检查用户名是否已存在
 	var existingAccount models.AuthAccount
 	err := s.db.Where("username = ? AND deleted = false", req.Username).First(&existingAccount).Error
@@ -51,7 +52,7 @@ func (s *AuthServiceImpl) DoRegister(req *user.RegisterRequest) (*models.AuthUse
 	}
 
 	// 创建用户信息
-	userInfo := &models.AuthUserInfo{
+	userInfo := &models.UserInfo{
 		Nickname: req.Nickname,
 	}
 
@@ -63,42 +64,52 @@ func (s *AuthServiceImpl) DoRegister(req *user.RegisterRequest) (*models.AuthUse
 }
 
 // DoLogin 用户登录
-func (s *AuthServiceImpl) DoLogin(req *user.LoginRequest, clientIP string) (string, *models.AuthAccount, *models.AuthUserInfo, error) {
+func (s *AuthServiceImpl) DoLogin(req *user.LoginRequest, clientIP string) (string, *user.UserPublicAssociatedInfo, error) {
 	// 获取用户
 	account, userInfo, err := s.userService.GetUserByUsername(req.Username)
 	if err != nil {
-		return "", nil, nil, errors.New("用户名或密码错误")
+		return "", nil, errors.New("用户名或密码错误")
 	}
 
 	// 验证密码
 	if !utils.CheckPassword(req.Password, account.Password) {
-		return "", nil, nil, errors.New("用户名或密码错误")
+		return "", nil, errors.New("用户名或密码错误")
 	}
 
 	// 生成 token
 	token, err := utils.GenerateToken(userInfo.AccountID)
 	if err != nil {
-		return "", nil, nil, errors.New("Token生成失败")
+		return "", nil, errors.New("Token生成失败")
 	}
 
 	// 更新登录信息
 	if err := s.updateLoginInfo(account.ID, clientIP); err != nil {
-		return "", nil, nil, errors.New("更新登录信息失败")
+		return "", nil, errors.New("更新登录信息失败")
 	}
 
-	return token, account, userInfo, nil
+	return token, userInfo, nil
 }
 
 func (s *AuthServiceImpl) updateLoginInfo(accountID, clientIP string) error {
 	now := time.Now()
-	return s.db.Model(&models.AuthAccount{}).
-		Where("id = ?", accountID).
-		Updates(map[string]interface{}{
-			"last_login_time":    &now,
-			"last_login_ip":      &clientIP,
-			"last_active_time":   &now,
-			"login_count":        gorm.Expr("login_count + 1"),
-			"failed_login_count": 0,
-			"lock_until":         nil,
-		}).Error
+
+	updateData := models.LoginInfoUpdate{
+		LastLoginTime: &now,
+		LastLoginIP:   &clientIP,
+		LockUntil:     nil,
+	}
+
+	return s.db.Transaction(func(tx *gorm.DB) error {
+		// 更新基础字段
+		if err := tx.Table("auth_account").
+			Where("id = ?", accountID).
+			Updates(updateData).Error; err != nil {
+			return err
+		}
+
+		// 更新计数字段
+		return tx.Table("auth_account").
+			Where("id = ?", accountID).
+			Update("login_count", gorm.Expr("login_count + 1")).Error
+	})
 }

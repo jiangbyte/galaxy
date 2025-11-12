@@ -28,18 +28,10 @@ type LoginRequest struct {
 	CaptchaCode string `json:"captcha_code" binding:"required"` // 验证码
 }
 
-// UserInfo 定义用户信息结构体
-type UserInfo struct {
-	ID       string  `json:"id"`
-	Username string  `json:"username"`
-	Nickname string  `json:"nickname"`
-	Avatar   *string `json:"avatar"`
-}
-
 // LoginResponse 定义登录响应结构体
 type LoginResponse struct {
-	Token string   `json:"token"`
-	User  UserInfo `json:"user"`
+	Token string                   `json:"token"`
+	User  UserPublicAssociatedInfo `json:"user"`
 }
 
 // ====================== 验证码响应 ======================
@@ -47,4 +39,16 @@ type LoginResponse struct {
 type CaptchaResponse struct {
 	CaptchaID  string `json:"captcha_id"`
 	CaptchaImg string `json:"captcha_img"`
+}
+
+// ====================== 注销 ======================
+
+// LogoutRequest 注销请求
+type LogoutRequest struct {
+	Token string `json:"token" binding:"required"`
+}
+
+// LogoutResponse 注销响应
+type LogoutResponse struct {
+	Message string `json:"message"`
 }

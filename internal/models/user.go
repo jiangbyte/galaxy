@@ -2,274 +2,104 @@ package models
 
 import (
 	"galaxy/pkg/model"
-	"time"
-
 	"gorm.io/datatypes"
+	"time"
 )
 
 // ============================================================
-// 用户认证
+// 用户信息
 // ============================================================
 
-// AuthAccount 核心账户表
-type AuthAccount struct {
-	model.BaseModel
-	Username  string  `gorm:"column:username;type:varchar(64);not null;uniqueIndex:idx_account_username"`
-	Password  string  `gorm:"column:password;type:varchar(100);not null"`
-	Email     *string `gorm:"column:email;type:varchar(128);uniqueIndex:idx_account_email"`
-	Telephone *string `gorm:"column:telephone;type:varchar(20);uniqueIndex:idx_account_telephone"`
-	GroupID   *string `gorm:"column:group_id;type:varchar(32)"`
-
-	// 账户安全状态
-	IsVerified bool `gorm:"column:is_verified;default:false"`
-	IsActive   bool `gorm:"column:is_active;default:true"`
-
-	// 安全相关
-	PasswordStrength   int        `gorm:"column:password_strength;type:smallint;default:0"`
-	LastPasswordChange *time.Time `gorm:"column:last_password_change"`
-	SecurityQuestion   *string    `gorm:"column:security_question;type:varchar(255)"`
-	SecurityAnswer     *string    `gorm:"column:security_answer;type:varchar(255)"`
-
-	// 登录与活跃信息
-	LastLoginTime    *time.Time `gorm:"column:last_login_time"`
-	LastLoginIP      *string    `gorm:"column:last_login_ip;type:varchar(64)"`
-	LastActiveTime   *time.Time `gorm:"column:last_active_time"`
-	LoginCount       int        `gorm:"column:login_count;default:0"`
-	FailedLoginCount int        `gorm:"column:failed_login_count;type:smallint;default:0"`
-	LockUntil        *time.Time `gorm:"column:lock_until"`
-}
-
-func (AuthAccount) TableName() string {
-	return "auth_account"
-}
-
-// AuthUserInfo 用户基本信息表
-type AuthUserInfo struct {
+// UserInfo 用户基本信息表
+type UserInfo struct {
 	model.BaseModel
 	AccountID string `gorm:"column:account_id;type:varchar(32);not null;uniqueIndex:idx_user_info_account"`
-
 	// 基础身份信息
-	Nickname string     `gorm:"column:nickname;type:varchar(128);not null;index:idx_user_nickname"`
-	RealName *string    `gorm:"column:real_name;type:varchar(64)"`
-	Avatar   *string    `gorm:"column:avatar;type:varchar(255)"`
-	Gender   int        `gorm:"column:gender;type:smallint;default:0"`
-	Birthday *time.Time `gorm:"column:birthday;type:date"`
-
+	Nickname string     `gorm:"column:nickname;type:varchar(128);not null;index:idx_user_nickname"` // 昵称
+	Avatar   *string    `gorm:"column:avatar;type:varchar(255)"`                                    // 头像
+	Gender   int        `gorm:"column:gender;type:smallint;default:0"`                              // 性别 0: 未知 1: 男 2: 女
+	Birthday *time.Time `gorm:"column:birthday;type:date"`                                          // 生日
 	// 展示信息
-	DisplayName *string `gorm:"column:display_name;type:varchar(128)"`
-	Title       *string `gorm:"column:title;type:varchar(100)"`
-	Signature   *string `gorm:"column:signature;type:varchar(500)"`
-
-	// 基础统计
-	Level int   `gorm:"column:level;default:1;index:idx_user_level"`
-	Exp   int64 `gorm:"column:exp;default:0"`
-}
-
-func (AuthUserInfo) TableName() string {
-	return "auth_user_info"
-}
-
-// AuthUserProfile 用户档案详情表
-type AuthUserProfile struct {
-	model.BaseModel
-	AccountID string `gorm:"column:account_id;type:varchar(32);not null;uniqueIndex:idx_user_info_account"`
-
-	// 教育职业信息
-	School    *string `gorm:"column:school;type:varchar(100)"`
-	Major     *string `gorm:"column:major;type:varchar(100)"`
-	StudentID *string `gorm:"column:student_id;type:varchar(50)"`
-	Company   *string `gorm:"column:company;type:varchar(100)"`
-	JobTitle  *string `gorm:"column:job_title;type:varchar(100)"`
-	Industry  *string `gorm:"column:industry;type:varchar(100)"`
-
-	// 地理位置
-	Country  *string `gorm:"column:country;type:varchar(50)"`
-	Province *string `gorm:"column:province;type:varchar(50)"`
-	City     *string `gorm:"column:city;type:varchar(50)"`
-	Location *string `gorm:"column:location;type:varchar(100)"`
-
-	// 个人背景
-	Background *string        `gorm:"column:background;type:varchar(255)"`
-	Bio        *string        `gorm:"column:bio;type:text"`
-	Interests  datatypes.JSON `gorm:"column:interests;type:jsonb"`
-
+	Signature  *string        `gorm:"column:signature;type:varchar(500)"`  // 个性签名
+	Background *string        `gorm:"column:background;type:varchar(255)"` // 个人背景图片
+	Interests  datatypes.JSON `gorm:"column:interests;type:jsonb"`         // 兴趣标签
 	// 社交链接
-	Website *string `gorm:"column:website;type:varchar(255)"`
-	GitHub  *string `gorm:"column:github;type:varchar(100)"`
-	Blog    *string `gorm:"column:blog;type:varchar(255)"`
-	Weibo   *string `gorm:"column:weibo;type:varchar(100)"`
+	Website *string `gorm:"column:website;type:varchar(255)"` // 个人网站
+	GitHub  *string `gorm:"column:github;type:varchar(100)"`  // GitHub
+	GitTee  *string `gorm:"column:gitee;type:varchar(100)"`   // GitTee
+	Blog    *string `gorm:"column:blog;type:varchar(255)"`    // 博客
+}
 
+func (UserInfo) TableName() string {
+	return "user_info"
+}
+
+// UserProfile 用户档案详情表
+type UserProfile struct {
+	model.BaseModel
+	AccountID string `gorm:"column:account_id;type:varchar(32);not null;uniqueIndex:idx_user_info_account"`
+	// 教育职业信息
+	RealName  *string `gorm:"column:real_name;type:varchar(64)"`  // 真实姓名
+	School    *string `gorm:"column:school;type:varchar(100)"`    // 学校
+	Major     *string `gorm:"column:major;type:varchar(100)"`     //  专业
+	StudentID *string `gorm:"column:student_id;type:varchar(50)"` // 学号
+	Company   *string `gorm:"column:company;type:varchar(100)"`   //  公司
+	JobTitle  *string `gorm:"column:job_title;type:varchar(100)"` // 职位
+	Industry  *string `gorm:"column:industry;type:varchar(100)"`  // 行业
+	// 地理位置
+	Country  *string `gorm:"column:country;type:varchar(50)"`   // 国家
+	Province *string `gorm:"column:province;type:varchar(50)"`  // 省份
+	City     *string `gorm:"column:city;type:varchar(50)"`      //  城市
+	Location *string `gorm:"column:location;type:varchar(100)"` // 详细地址
+	// 社交信息
+	QQ     *string `gorm:"column:qq;type:varchar(20)"`     // QQ
+	WeChat *string `gorm:"column:wechat;type:varchar(50)"` // 微信
 	// 隐私设置
-	PrivacyLevel int  `gorm:"column:privacy_level;type:smallint;default:1"`
-	ShowRealName bool `gorm:"column:show_real_name;default:false"`
-	ShowBirthday bool `gorm:"column:show_birthday;default:false"`
-	ShowLocation bool `gorm:"column:show_location;default:true"`
+	ShowBirthday bool `gorm:"column:show_birthday;default:false"` // 是否显示生日
+	ShowLocation bool `gorm:"column:show_location;default:true"`  // 是否显示地理位置
 }
 
-func (AuthUserProfile) TableName() string {
-	return "auth_user_profile"
+func (UserProfile) TableName() string {
+	return "user_profile"
 }
 
-// AuthUserPreference 用户偏好设置表
-type AuthUserPreference struct {
+// UserPreference 用户偏好设置表
+type UserPreference struct {
 	model.BaseModel
 	AccountID string `gorm:"column:account_id;type:varchar(32);not null;uniqueIndex:idx_user_info_account"`
-
 	// 界面设置
-	Theme     string `gorm:"column:theme;type:varchar(50);default:light"`
-	Language  string `gorm:"column:language;type:varchar(10);default:zh-CN"`
-	FontSize  int    `gorm:"column:font_size;type:smallint;default:14"`
-	CodeTheme string `gorm:"column:code_theme;type:varchar(50);default:github"`
-
+	Theme    string `gorm:"column:theme;type:varchar(50);default:light"`    // 主题
+	Language string `gorm:"column:language;type:varchar(10);default:zh-CN"` // 系统语言
 	// 通知设置
-	EmailNotifications bool `gorm:"column:email_notifications;default:true"`
-	PushNotifications  bool `gorm:"column:push_notifications;default:true"`
-
+	EmailNotifications bool `gorm:"column:email_notifications;default:true"` // 邮件通知
+	PushNotifications  bool `gorm:"column:push_notifications;default:true"`  // 推送通知
 	// 隐私与展示
-	AllowDirectMessage bool `gorm:"column:allow_direct_message;default:true"`
+	AllowDirectMessage bool `gorm:"column:allow_direct_message;default:true"` // 允许私信
 }
 
-func (AuthUserPreference) TableName() string {
-	return "auth_user_preference"
+func (UserPreference) TableName() string {
+	return "user_preference"
 }
 
-// AuthUserStats 用户统计信息表
-type AuthUserStats struct {
+// UserStats 用户统计信息表
+type UserStats struct {
 	model.BaseModel
 	AccountID string `gorm:"column:account_id;type:varchar(32);not null;uniqueIndex:idx_user_info_account"`
-
 	// 等级与经验
-	Level int     `gorm:"column:level;default:1;index:idx_user_level"`
-	Exp   int64   `gorm:"column:exp;default:0"`
-	Title *string `gorm:"column:title;type:varchar(100)"`
+	Level    int   `gorm:"column:level;default:1;index:idx_user_level"` // 等级
+	Exp      int64 `gorm:"column:exp;default:0"`                        // 经验值
+	TotalExp int64 `gorm:"column:total_exp;default:0"`                  // 累计经验值
+	// 活跃统计
+	LoginDays           int `gorm:"column:login_days;default:0"`            // 登录天数
+	ContinuousLoginDays int `gorm:"column:continuous_login_days;default:0"` // 连续登录天数
+	// 内容统计
+	PostCount    int64 `gorm:"column:post_count;default:0"`    // 发帖数
+	CommentCount int64 `gorm:"column:comment_count;default:0"` // 评论数
+	LikeCount    int64 `gorm:"column:like_count;default:0"`    // 获赞数
+	FollowCount  int64 `gorm:"column:follow_count;default:0"`  // 关注数
+	FansCount    int64 `gorm:"column:fans_count;default:0"`    // 粉丝数
 }
 
-func (AuthUserStats) TableName() string {
-	return "auth_user_stats"
-}
-
-// AuthUserVIP VIP信息表
-type AuthUserVIP struct {
-	model.BaseModel
-	AccountID     string     `gorm:"column:account_id;type:varchar(32);not null;uniqueIndex:idx_user_info_account"`
-	VIPLevel      int        `gorm:"column:vip_level;type:smallint;default:0"`
-	VIPExpireTime *time.Time `gorm:"column:vip_expire_time;index:idx_vip_expire"`
-	VIPStartTime  *time.Time `gorm:"column:vip_start_time"`
-	IsAutoRenew   bool       `gorm:"column:is_auto_renew;default:false"`
-}
-
-func (AuthUserVIP) TableName() string {
-	return "auth_user_vip"
-}
-
-// AuthUserBadge 用户徽章表
-type AuthUserBadge struct {
-	model.BaseModel
-	AccountID   string    `gorm:"column:account_id;type:varchar(32);not null;uniqueIndex:idx_user_info_account"`
-	BadgeID     string    `gorm:"column:badge_id;type:varchar(32);not null"`
-	BadgeName   *string   `gorm:"column:badge_name;type:varchar(100)"`
-	BadgeIcon   *string   `gorm:"column:badge_icon;type:varchar(255)"`
-	AcquireTime time.Time `gorm:"column:acquire_time;default:now()"`
-	IsEquipped  bool      `gorm:"column:is_equipped;default:false;index:idx_badge_equipped"`
-}
-
-func (AuthUserBadge) TableName() string {
-	return "auth_user_badge"
-}
-
-// AuthBadgeConfig 徽章配置表
-type AuthBadgeConfig struct {
-	model.BaseModel
-	Name           string  `gorm:"column:name;type:varchar(100);not null"`
-	Code           string  `gorm:"column:code;type:varchar(50);not null;uniqueIndex:idx_badge_code"`
-	Icon           *string `gorm:"column:icon;type:varchar(255)"`
-	Description    *string `gorm:"column:description;type:varchar(500)"`
-	Color          *string `gorm:"column:color;type:varchar(20)"`
-	Rarity         int     `gorm:"column:rarity;type:smallint;default:1"`
-	ConditionType  *string `gorm:"column:condition_type;type:varchar(50)"`
-	ConditionValue *string `gorm:"column:condition_value;type:varchar(255)"`
-}
-
-func (AuthBadgeConfig) TableName() string {
-	return "auth_badge_config"
-}
-
-// AuthUserVIPPrivilege VIP等级权益表
-type AuthUserVIPPrivilege struct {
-	model.BaseModel
-	VIPLevel        int     `gorm:"column:vip_level;type:smallint"`
-	Name            *string `gorm:"column:name;type:varchar(50)"`
-	Color           *string `gorm:"column:color;type:varchar(20)"`
-	AIChatPrivilege *bool   `gorm:"column:ai_chat_privilege"`
-}
-
-func (AuthUserVIPPrivilege) TableName() string {
-	return "auth_user_vip_privilege"
-}
-
-// AuthUserLevelConfig 用户等级成长配置表
-type AuthUserLevelConfig struct {
-	model.BaseModel
-	Level         int     `gorm:"column:level;not null;uniqueIndex:idx_level_config_level"`
-	LevelName     *string `gorm:"column:level_name;type:varchar(100)"`
-	ExpRequired   int64   `gorm:"column:exp_required"`
-	BadgeUnlocked *string `gorm:"column:badge_unlocked;type:varchar(100)"`
-	TitleUnlocked *string `gorm:"column:title_unlocked;type:varchar(100)"`
-}
-
-func (AuthUserLevelConfig) TableName() string {
-	return "auth_user_level_config"
-}
-
-// AuthAccountRole 账户-角色 关联表
-type AuthAccountRole struct {
-	ID        string `gorm:"column:id;primaryKey;type:varchar(32)"`
-	AccountID string `gorm:"column:account_id;type:varchar(32);not null"`
-	RoleID    string `gorm:"column:role_id;type:varchar(32);not null"`
-}
-
-func (AuthAccountRole) TableName() string {
-	return "auth_account_role"
-}
-
-// AuthGroup 用户组表
-type AuthGroup struct {
-	model.BaseModel
-	ParentID     *string `gorm:"column:parent_id;type:varchar(32)"`
-	Name         *string `gorm:"column:name;type:varchar(100)"`
-	Code         *string `gorm:"column:code;type:varchar(50);uniqueIndex:idx_group_code"`
-	Description  *string `gorm:"column:description;type:varchar(255)"`
-	Sort         int     `gorm:"column:sort;type:smallint;default:99"`
-	AdminID      *string `gorm:"column:admin_id;type:varchar(32)"`
-	MaxUserCount *int    `gorm:"column:max_user_count"`
-	IsSystem     bool    `gorm:"column:is_system;default:false"`
-}
-
-func (AuthGroup) TableName() string {
-	return "auth_group"
-}
-
-// AuthRole 角色表
-type AuthRole struct {
-	model.BaseModel
-	Name           *string        `gorm:"column:name;type:varchar(255);index:idx_name"`
-	Code           *string        `gorm:"column:code;type:varchar(50);index:idx_role_code"`
-	DataScope      *string        `gorm:"column:data_scope;type:varchar(50);index:idx_data_scope"`
-	Description    *string        `gorm:"column:description;type:varchar(255)"`
-	AssignGroupIDs datatypes.JSON `gorm:"column:assign_group_ids;type:jsonb"`
-}
-
-func (AuthRole) TableName() string {
-	return "auth_role"
-}
-
-// AuthRoleMenu 角色-菜单 关联表
-type AuthRoleMenu struct {
-	ID     string `gorm:"column:id;primaryKey;type:varchar(32)"`
-	RoleID string `gorm:"column:role_id;type:varchar(32);not null"`
-	MenuID string `gorm:"column:menu_id;type:varchar(32);not null"`
-}
-
-func (AuthRoleMenu) TableName() string {
-	return "auth_role_menu"
+func (UserStats) TableName() string {
+	return "user_stats"
 }

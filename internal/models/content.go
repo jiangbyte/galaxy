@@ -8,8 +8,8 @@ import (
 // 内容管理表
 // ============================================================
 
-// CmsArticle 系统文章表
-type CmsArticle struct {
+// ContentArticle 系统文章表
+type ContentArticle struct {
 	model.BaseModel
 	Title      string  `gorm:"column:title;type:varchar(255)"`
 	Subtitle   *string `gorm:"column:subtitle;type:varchar(255)"`
@@ -25,12 +25,12 @@ type CmsArticle struct {
 	ModuleType string  `gorm:"column:module_type;type:varchar(255)"`
 }
 
-func (CmsArticle) TableName() string {
-	return "cms_article"
+func (ContentArticle) TableName() string {
+	return "content_article"
 }
 
-// CmsBanner 横幅表
-type CmsBanner struct {
+// ContentBanner 横幅表
+type ContentBanner struct {
 	model.BaseModel
 	Title             string  `gorm:"column:title;type:varchar(255)"`
 	Banner            *string `gorm:"column:banner;type:varchar(255)"`
@@ -47,12 +47,12 @@ type CmsBanner struct {
 	ModuleType        string  `gorm:"column:module_type;type:varchar(255)"`
 }
 
-func (CmsBanner) TableName() string {
-	return "cms_banner"
+func (ContentBanner) TableName() string {
+	return "content_banner"
 }
 
-// CmsCategory 分类表
-type CmsCategory struct {
+// ContentCategory 分类表
+type ContentCategory struct {
 	model.BaseModel
 	Name       string `gorm:"column:name;type:varchar(255)"`
 	IsVisible  bool   `gorm:"column:is_visible;default:true"`
@@ -60,12 +60,12 @@ type CmsCategory struct {
 	ParentID   string `gorm:"column:parent_id;type:varchar(32);default:0"`
 }
 
-func (CmsCategory) TableName() string {
-	return "cms_category"
+func (ContentCategory) TableName() string {
+	return "content_category"
 }
 
-// CmsNotice 公告表
-type CmsNotice struct {
+// ContentNotice 公告表
+type ContentNotice struct {
 	model.BaseModel
 	Title      string  `gorm:"column:title;type:varchar(64)"`
 	Cover      *string `gorm:"column:cover;type:varchar(255)"`
@@ -76,12 +76,12 @@ type CmsNotice struct {
 	ModuleType string  `gorm:"column:module_type;type:varchar(255)"`
 }
 
-func (CmsNotice) TableName() string {
-	return "cms_notice"
+func (ContentNotice) TableName() string {
+	return "content_notice"
 }
 
-// CmsTag 标签表
-type CmsTag struct {
+// ContentTag 标签表
+type ContentTag struct {
 	model.BaseModel
 	Name       string `gorm:"column:name;type:varchar(255)"`
 	IsVisible  bool   `gorm:"column:is_visible;default:true"`
@@ -89,6 +89,6 @@ type CmsTag struct {
 	ParentID   string `gorm:"column:parent_id;type:varchar(32);default:0"`
 }
 
-func (CmsTag) TableName() string {
-	return "cms_tag"
+func (ContentTag) TableName() string {
+	return "content_tag"
 }

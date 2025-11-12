@@ -2,22 +2,24 @@ package user
 
 import (
 	user2 "galaxy/internal/dto/user"
+	"galaxy/internal/service/share/auth"
 	"galaxy/internal/service/web/user"
 	"galaxy/pkg/captcha"
 	"galaxy/pkg/handler"
+	"galaxy/pkg/service"
 	"github.com/gin-gonic/gin"
 )
 
 type AuthHandler struct {
 	handler.BaseHandler
-	authService user.AuthService
+	authService auth.AuthService
 }
 
 func NewAuthHandler() *AuthHandler {
 	// 创建 UserService 实例
 	userService := user.NewUserService()
 	// 注入到 AuthService
-	authService := user.NewAuthService(userService)
+	authService := auth.NewAuthService(userService)
 	return &AuthHandler{
 		authService: authService,
 	}
@@ -80,7 +82,7 @@ func (h *AuthHandler) DoLogin(c *gin.Context) {
 		return
 	}
 
-	token, account, userInfo, err := h.authService.DoLogin(&req, c.ClientIP())
+	token, info, err := h.authService.DoLogin(&req, c.ClientIP())
 	if err != nil {
 		h.Unauthorized(c, err.Error())
 		return
@@ -88,11 +90,26 @@ func (h *AuthHandler) DoLogin(c *gin.Context) {
 
 	h.Success(c, user2.LoginResponse{
 		Token: token,
-		User: user2.UserInfo{
-			ID:       userInfo.ID,
-			Username: account.Username,
-			Nickname: userInfo.Nickname,
-			Avatar:   userInfo.Avatar,
-		},
+		User:  *info,
+	})
+}
+
+func (h *AuthHandler) DoLogout(c *gin.Context) {
+	h.StartTimer(c)
+
+	var req user2.LogoutRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.BadRequest(c, err.Error())
+		return
+	}
+
+	// 将 token 加入黑名单
+	if err := service.Blacklist.AddToBlacklist(req.Token); err != nil {
+		h.InternalServerError(c, "注销失败")
+		return
+	}
+
+	h.Success(c, user2.LogoutResponse{
+		Message: "注销成功",
 	})
 }

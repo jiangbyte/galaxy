@@ -11,8 +11,8 @@ import (
 // 用户学习记录表
 // ============================================================
 
-// UserCodeLibrary 用户提交代码库
-type UserCodeLibrary struct {
+// RecordCodeLibrary 用户提交代码库
+type RecordCodeLibrary struct {
 	model.BaseModel
 	UserID         *string        `gorm:"column:user_id;type:varchar(32)"`
 	ModuleType     *string        `gorm:"column:module_type;type:varchar(32)"`
@@ -29,28 +29,12 @@ type UserCodeLibrary struct {
 	AccessCount    int            `gorm:"column:access_count;default:0"`
 }
 
-func (UserCodeLibrary) TableName() string {
-	return "user_code_library"
+func (RecordCodeLibrary) TableName() string {
+	return "record_code_library"
 }
 
-// UserProgress 题集进度表
-type UserProgress struct {
-	model.BaseModel
-	UserID     *string    `gorm:"column:user_id;type:varchar(32)"`
-	ModuleType *string    `gorm:"column:module_type;type:varchar(32)"`
-	ModuleID   *string    `gorm:"column:module_id;type:varchar(32)"`
-	ProblemID  *string    `gorm:"column:problem_id;type:varchar(32)"`
-	Status     *string    `gorm:"column:status;type:varchar(32)"`
-	IsFinish   bool       `gorm:"column:is_finish;default:false"`
-	FinishTime *time.Time `gorm:"column:finish_time"`
-}
-
-func (UserProgress) TableName() string {
-	return "user_progress"
-}
-
-// UserSolved 用户解决表
-type UserSolved struct {
+// RecordSolved 用户解决表
+type RecordSolved struct {
 	model.BaseModel
 	ModuleType      *string    `gorm:"column:module_type;type:varchar(32)"`
 	ModuleID        *string    `gorm:"column:module_id;type:varchar(32)"`
@@ -63,6 +47,6 @@ type UserSolved struct {
 	FirstSubmitTime *time.Time `gorm:"column:first_submit_time"`
 }
 
-func (UserSolved) TableName() string {
-	return "user_solved"
+func (RecordSolved) TableName() string {
+	return "record_solved"
 }

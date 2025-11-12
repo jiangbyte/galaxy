@@ -70,32 +70,35 @@ func AutoMigrate() error {
 	tables := []interface{}{
 		// ==================== 用户认证模块 ====================
 		&models2.AuthAccount{},
-		&models2.AuthUserInfo{},
-		&models2.AuthUserProfile{},
-		&models2.AuthUserPreference{},
-		&models2.AuthUserStats{},
-		&models2.AuthUserVIP{},
-		&models2.AuthUserBadge{},
-		&models2.AuthBadgeConfig{},
-		&models2.AuthUserVIPPrivilege{},
-		&models2.AuthUserLevelConfig{},
+		&models2.UserInfo{},
+		&models2.UserProfile{},
+		&models2.UserPreference{},
+		&models2.UserStats{},
+		&models2.VipInfo{},
+		&models2.UserBadge{},
+		&models2.BadgeConfig{},
+		&models2.VipPrivilege{},
+		&models2.VipLevelConfig{},
 		&models2.AuthAccountRole{},
 		&models2.AuthGroup{},
 		&models2.AuthRole{},
 		&models2.AuthRoleMenu{},
 
 		// ==================== 系统管理模块 ====================
-		&models2.SysConfig{},
 		&models2.SysDict{},
 		&models2.SysLog{},
 		&models2.SysMenu{},
 
+		// ==================== 配置 ====================
+		&models2.ConfigGroup{},
+		&models2.ConfigItem{},
+
 		// ==================== CMS内容管理模块 ====================
-		&models2.CmsArticle{},
-		&models2.CmsBanner{},
-		&models2.CmsCategory{},
-		&models2.CmsNotice{},
-		&models2.CmsTag{},
+		&models2.ContentArticle{},
+		&models2.ContentBanner{},
+		&models2.ContentCategory{},
+		&models2.ContentNotice{},
+		&models2.ContentTag{},
 
 		// ==================== 题目管理模块 ====================
 		&models2.ProblemInfo{},
@@ -113,9 +116,8 @@ func AutoMigrate() error {
 		&models2.ContestProblem{},
 
 		// ==================== 用户学习记录模块 ====================
-		&models2.UserCodeLibrary{},
-		&models2.UserProgress{},
-		&models2.UserSolved{},
+		&models2.RecordCodeLibrary{},
+		&models2.RecordSolved{},
 
 		// ==================== 代码相似度检测模块 ====================
 		&models2.SimilarityStat{},

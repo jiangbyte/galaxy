@@ -11,22 +11,6 @@ import (
 // 系统基础表
 // ============================================================
 
-// SysConfig 系统配置表
-type SysConfig struct {
-	model.BaseModel
-	Name          string  `gorm:"column:name;type:varchar(255)"`
-	Code          string  `gorm:"column:code;type:varchar(255);uniqueIndex:idx_code"`
-	Value         string  `gorm:"column:value;type:varchar(255)"`
-	ComponentType *string `gorm:"column:component_type;type:varchar(255)"`
-	Description   *string `gorm:"column:description;type:varchar(255)"`
-	ConfigType    *string `gorm:"column:config_type;type:varchar(255)"`
-	Sort          int     `gorm:"column:sort;default:0"`
-}
-
-func (SysConfig) TableName() string {
-	return "sys_config"
-}
-
 // SysDict 系统字典表
 type SysDict struct {
 	model.BaseModel

@@ -8,6 +8,6 @@ import (
 func NotFoundHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		baseHandler := BaseHandler{}
-		baseHandler.Error(c, http.StatusUnauthorized, "Unauthorized")
+		baseHandler.Error(c, http.StatusNotFound, "找不到该资源")
 	}
 }
